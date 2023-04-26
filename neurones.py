@@ -72,15 +72,21 @@ class Perceptron:
 
             print(f"Input: {x}, Label: {y}, Prediction: {y_hat}")
 
-            if y_hat != y:
-                print("Updating weights...")
-                print(f"Original w = {self.w}")
-                for i in range(self.n):
-                    print(f"Updating w[{i}] on input {x[i]}")
-                    delta_w = (y - y_hat) * x[i] * learning_rate
-                    # BUG: This is the bit I don't fully understand why x[i]?
-                    self.w[i] = self.w[i] + delta_w
-                print(f"New w = {self.w}")
+            print(f"Original w = {self.w}")
+            for i in range(self.n):
+                print(f"Updating w[{i}] on input {x[i]}")
+                # Intuition for delta_w; if y - y_hat == 0, then delta_w = 0
+                # Why multiply by x[i] - because we need to have a sense of the direction (polarity) of the input. We need the delta to be in the direction that leads to the correct output
+                # BUG: Not got a confident intuition for this yet
+                delta_w = (y - y_hat) * x[i] * learning_rate
+                self.w[i] = self.w[i] + delta_w
+
+            # Update bias (can be treated as a weight with a constant input of 1)
+            delta_b = (y - y_hat) * 1 * learning_rate
+            self.b = self.b + delta_b
+
+            print(f"New w = {self.w}")
+            print(f"New b = {self.b}")
 
         print("Finished learning!")
         print(f"Final w = {self.w}")
