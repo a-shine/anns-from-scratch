@@ -38,6 +38,10 @@ class Perceptron:
             # Make sure w is a numpy array
             if n != len(w):
                 raise ValueError("Input size is incorrect!")
+            # check that w is an array of floats
+            for i in range(len(w)):
+                if not isinstance(w[i], float):
+                    raise ValueError("Input array must be an array of floats!")
             w = np.array(w)
 
         self.n = n  # Number of inputs
@@ -57,7 +61,7 @@ class Perceptron:
     def __str__(self):
         return f"[x_1, ..., x_{self.n} + {self.b}] -> (\sum|{self.activation_function}) -> y"
 
-    # TODO: Figure out how to make learning work on a Perceptron level
+    # Implementation of the perceptron learning rule
     def learn(self, test_inputs, labels, epochs=100, learning_rate=0.1):
         if len(test_inputs) != len(labels):
             raise ValueError("Input size is incorrect!")
@@ -90,3 +94,15 @@ class Perceptron:
 
         print("Finished learning!")
         print(f"Final w = {self.w}")
+
+    def copy(self):
+        return Perceptron(self.n, self.activation_function, self.w, self.b)
+
+
+# An MP neuron is a less general version of a perceptron
+class MPPerceptron(Perceptron):
+    def __init__(self, n: int, theta: int) -> None:
+        super().__init__(n, ActivationFunction.step, np.array([1] * n), -theta)
+
+    def __str__(self) -> str:
+        return f"[x_1, ..., x_{self.n}] -> ({self.theta}||) -> y [0 or 1]"
