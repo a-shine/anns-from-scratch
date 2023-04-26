@@ -4,7 +4,7 @@ from neurones import MPNeurone, Perceptron
 from activation_functions import Sigmoid, Step, Linear
 
 
-# Make a layer of MPNeurones or Perceptrons
+# Make a layer of MPNeurone or Perceptron
 class Layer:
     def __init__(self, nb_neurons: int, neurone_type=MPNeurone) -> None:
         self.neurone_type = neurone_type
@@ -21,14 +21,15 @@ class Layer:
                 return False
             y.append(self.neurones[i](x[i]))
         return y
-    
+
     # Append one layer to the next (maybe link list style)
     def append(self, layer):
         pass
 
-
     def __str__(self):
-        return f"[x_1, ..., x_{self.n}] -> (\sum|{self.activation_function}) -> y [0 or 1]"
+        return (
+            f"[x_1, ..., x_{self.n}] -> (\sum|{self.activation_function}) -> y [0 or 1]"
+        )
 
 
 class Network:

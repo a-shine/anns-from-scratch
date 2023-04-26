@@ -7,7 +7,7 @@ from activation_functions import ActivationFunction
 # Define an MP neurone object
 class MPNeurone:
     def __init__(self, n: int, theta: int) -> None:
-        self.n = n  # input size
+        self.n = n  # number of inputs
         self.theta = theta  # threshold
 
     def __call__(self, x: list[int]) -> int:
@@ -40,9 +40,9 @@ class Perceptron:
                 raise ValueError("Input size is incorrect!")
             w = np.array(w)
 
-        self.n = n  # input size
-        self.w = w  # weights BUG: Is this generating a random array
-        self.b = b  # bias
+        self.n = n  # Number of inputs
+        self.w = w  # Weights
+        self.b = b  # Bias
         self.activation_function = activation_function
 
     def __call__(self, x):
@@ -55,4 +55,32 @@ class Perceptron:
         return self.activation_function((x @ self.w.T) + self.b)
 
     def __str__(self):
-        return f"[x_1, ..., x_{self.n} + {self.b}] -> (\sum|{self.activation_function}) -> y [0 or 1]"
+        return f"[x_1, ..., x_{self.n} + {self.b}] -> (\sum|{self.activation_function}) -> y"
+
+    # TODO: Figure out how to make learning work on a Perceptron level
+    def learn(self, test_inputs, labels, epochs=100, learning_rate=0.1):
+        if len(test_inputs) != len(labels):
+            raise ValueError("Input size is incorrect!")
+
+        for _ in range(epochs):
+            # chose a random input and its label
+            i = np.random.randint(0, len(test_inputs))
+            x = test_inputs[i]
+            y = labels[i]
+
+            y_hat = self(x)
+
+            print(f"Input: {x}, Label: {y}, Prediction: {y_hat}")
+
+            if y_hat != y:
+                print("Updating weights...")
+                print(f"Original w = {self.w}")
+                for i in range(self.n):
+                    print(f"Updating w[{i}] on input {x[i]}")
+                    delta_w = (y - y_hat) * x[i] * learning_rate
+                    # BUG: This is the bit I don't fully understand why x[i]?
+                    self.w[i] = self.w[i] + delta_w
+                print(f"New w = {self.w}")
+
+        print("Finished learning!")
+        print(f"Final w = {self.w}")
