@@ -24,14 +24,14 @@ if __name__ == "__main__":
 
     or_layer.append(and_layer)
 
-    print(or_layer._feed_forward([[1, 1], [0, 0]]))
+    print(or_layer._feed_forward([0, 1, 0, 0]))
 
-    or_layer.learn(
-        [[[1, 0], [0, 1]], [[1, 0], [1, 1]], [[1, 1], [1, 1]]],
-        [1, 1, 1],
-        epochs=100,
-        learning_rate=0.1,
-    )
+    # or_layer.learn(
+    #     [[[1, 0], [0, 1]], [[1, 0], [1, 1]], [[1, 1], [1, 1]]],
+    #     [1, 1, 1],
+    #     epochs=100,
+    #     learning_rate=0.1,
+    # )
 
     # The next layer approach allows for feed forward but not back propagation
     # Change implementation to allow for back propagation

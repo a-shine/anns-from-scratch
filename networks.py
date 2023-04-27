@@ -5,7 +5,8 @@ class Layer:
         self.neurones = []
 
         self.nb_outputs = nb_neurons
-        # self.nb_inputs = neuron_instance.n * nb_neurons
+        self.nb_inputs = neuron_instance.n * nb_neurons
+        self.nb_weights = self.nb_inputs + 1  # +1 for the bias
 
         self.prev_layer = None
         self.next_layer = None
@@ -15,14 +16,17 @@ class Layer:
 
     def __call__(self, x):
         # x is a list of input lists for each neuron
-        if len(x) != len(self.neurones):
+        if len(x) != self.nb_inputs:
             raise ValueError("Input size is incorrect!")
 
         y = []
 
+        # Batch the inputs for each neuron
+        index = 0
         for i in range(len(self.neurones)):
-            y_i = self.neurones[i](x[i])
+            y_i = self.neurones[i](x[index : index + self.neurone_instance.n])
             y.append(y_i)
+            index += self.neurone_instance.n  # Move the index to the next batch
 
         return y
 
@@ -39,7 +43,7 @@ class Layer:
         y = self.__call__(x)
 
         if self.next_layer is not None:
-            return self.next_layer._feed_forward([y])
+            return self.next_layer._feed_forward(y)
         else:
             return y
 
