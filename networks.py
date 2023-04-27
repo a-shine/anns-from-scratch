@@ -1,6 +1,3 @@
-# Network builder
-
-
 # Make a layer of MPNeurone or Perceptron
 class Layer:
     def __init__(self, nb_neurons: int, neuron_instance) -> None:
@@ -10,6 +7,7 @@ class Layer:
         self.nb_outputs = nb_neurons
         # self.nb_inputs = neuron_instance.n * nb_neurons
 
+        self.prev_layer = None
         self.next_layer = None
 
         for _ in range(nb_neurons):
@@ -22,7 +20,6 @@ class Layer:
 
         y = []
 
-        # print(self.neurones)
         for i in range(len(self.neurones)):
             y_i = self.neurones[i](x[i])
             y.append(y_i)
@@ -33,29 +30,34 @@ class Layer:
     def append(self, layer):
         # if self.nb_outputs != layer.nb_inputs:
         #     raise ValueError("Input size is incorrect!")
+        # Bidirectionally link the layers
         self.next_layer = layer
+        self.next_layer.prev_layer = self
 
-    def feed_forward(self, x):
-        # x is a list of input lists for each neuron
+    def _feed_forward(self, x):
+        # x is a list of input lists for each neuron (i.e. list of lists)
         y = self.__call__(x)
 
-        # print(y)
-        # print(len(self.next_layer.neurones))
-
         if self.next_layer is not None:
-            return self.next_layer.feed_forward([y])
+            return self.next_layer._feed_forward([y])
         else:
             return y
+
+    def learn(self, x, y, epochs=100, learning_rate=0.1):
+        # x is a list of input lists for each neuron
+        # y is a list of output lists for each neuron
+
+        for _ in range(epochs):
+            # compute the error
+            for i in range(len(x)):
+                y_hat = self._feed_forward(x[i])
+                # BUG: what happens if the output layer is more than a single value?
+                error = y[i] - y_hat[0]
+
+                # compute the derivative of every weight and bias in this layer with respect to the error and adjust them proportionally
+                # do this this recursively for every layer
 
     def __str__(self):
         return (
             f"[x_1, ..., x_{self.n}] -> (\sum|{self.activation_function}) -> y [0 or 1]"
         )
-
-
-class Network:
-    def __init__(self) -> None:
-        pass
-        # input layer
-        # hidden layer
-        # output layer

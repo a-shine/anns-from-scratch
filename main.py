@@ -21,9 +21,17 @@ if __name__ == "__main__":
     and_layer = Layer(
         1, Perceptron(n=2, activation_function=Step(), w=[1.0, 1.0], b=-2)
     )
+
     or_layer.append(and_layer)
 
-    print(or_layer([[0, 0], [0, 1]]))
-    print(and_layer([[1, 1]]))
+    print(or_layer._feed_forward([[1, 1], [0, 0]]))
 
-    print(or_layer.feed_forward([[1, 1], [0, 0]]))
+    or_layer.learn(
+        [[[1, 0], [0, 1]], [[1, 0], [1, 1]], [[1, 1], [1, 1]]],
+        [1, 1, 1],
+        epochs=100,
+        learning_rate=0.1,
+    )
+
+    # The next layer approach allows for feed forward but not back propagation
+    # Change implementation to allow for back propagation
