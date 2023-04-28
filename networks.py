@@ -1,6 +1,9 @@
-# Make a layer of MPNeurone or Perceptron
+from loss_functions import LossFunction, L1
+from neurones import Perceptron
+
+
 class Layer:
-    def __init__(self, nb_neurons: int, neuron_instance) -> None:
+    def __init__(self, nb_neurons: int, neuron_instance: Perceptron) -> None:
         self.neurone_instance = neuron_instance
         self.neurones = []
 
@@ -8,14 +11,13 @@ class Layer:
         self.nb_inputs = neuron_instance.n * nb_neurons
         self.nb_weights = self.nb_inputs + 1  # +1 for the bias
 
-        self.prev_layer = None
-        self.next_layer = None
+        self.prev_layer: Layer = None
+        self.next_layer: Layer = None
 
         for _ in range(nb_neurons):
             self.neurones.append(neuron_instance.copy())
 
     def __call__(self, x):
-        # x is a list of input lists for each neuron
         if len(x) != self.nb_inputs:
             raise ValueError("Input size is incorrect!")
 
@@ -30,38 +32,59 @@ class Layer:
 
         return y
 
-    # Append one layer to the next (maybe link list style)
+    # Append one layer to the next
     def append(self, layer):
-        # if self.nb_outputs != layer.nb_inputs:
-        #     raise ValueError("Input size is incorrect!")
-        # Bidirectionally link the layers
+        # the neuron output for every neuron in the current layer needs to be the input for every neuron in the next layer
+        self.nb_outputs = layer.nb_inputs
+
+        # Bidirectionally link the layers to allow for forward and backward propagation
         self.next_layer = layer
         self.next_layer.prev_layer = self
 
     def _feed_forward(self, x):
-        # x is a list of input lists for each neuron (i.e. list of lists)
         y = self.__call__(x)
 
         if self.next_layer is not None:
-            return self.next_layer._feed_forward(y)
+            out = []
+            # generate the input for the next layer
+            for i in range(self.next_layer.nb_inputs):
+                out.append(y[i % self.neurone_instance.n])
+
+            return self.next_layer._feed_forward(out)
         else:
             return y
 
-    def learn(self, x, y, epochs=100, learning_rate=0.1):
-        # x is a list of input lists for each neuron
-        # y is a list of output lists for each neuron
+    def _get_weights(self):
+        weights = []
+        for neuron in self.neurones:
+            weights.extend(neuron.w)
+        return weights
 
+    def _update_weights(self, weights):
+        index = 0
+        for neuron in self.neurones:
+            neuron.w = weights[index : index + self.neurone_instance.n]
+            index += self.neurone_instance.n
+
+    def learn(
+        self, x, y, epochs=100, learning_rate=0.1, loss_function: LossFunction = L1()
+    ):
         for _ in range(epochs):
-            # compute the error
             for i in range(len(x)):
                 y_hat = self._feed_forward(x[i])
-                # BUG: what happens if the output layer is more than a single value?
-                error = y[i] - y_hat[0]
 
-                # compute the derivative of every weight and bias in this layer with respect to the error and adjust them proportionally
-                # do this this recursively for every layer
+                # compute the loss (remember y[i] and y_hat may be several outputs so they have to be lists)
+                loss = loss_function(y[i], y_hat)
 
-    def __str__(self):
-        return (
-            f"[x_1, ..., x_{self.n}] -> (\sum|{self.activation_function}) -> y [0 or 1]"
-        )
+                # move to the last layer
+                active_layer = self
+                while active_layer.next_layer is not None:
+                    active_layer = active_layer.next_layer
+
+                # back propagate
+                while active_layer.prev_layer is not None:
+                    # compute the gradient
+                    gradient = active_layer._get_gradient(y_hat, loss)
+                    # update the weights
+                    active_layer._update_weights(gradient, learning_rate)
+                    active_layer = active_layer.prev_layer

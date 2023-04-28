@@ -6,6 +6,9 @@ class ActivationFunction:
     def __call__(self, x):
         pass
 
+    def derivative(self, x):
+        pass
+
     def __str__(self):
         pass
 
@@ -13,6 +16,9 @@ class ActivationFunction:
 class Sigmoid(ActivationFunction):
     def __call__(self, x):
         return 1 / (1 + np.exp(-x))
+
+    def derivative(self, x):
+        return self(x) * (1 - self(x))
 
     def __str__(self):
         return "Sigmoid"
@@ -25,6 +31,9 @@ class Step(ActivationFunction):
         else:
             return 0
 
+    def derivative(self, x):
+        return 0
+
     def __str__(self):
         return "Step"
 
@@ -32,6 +41,9 @@ class Step(ActivationFunction):
 class Linear(ActivationFunction):
     def __call__(self, x):
         return x
+
+    def derivative(self, x):
+        return 1
 
     def __str__(self):
         return "Linear"
@@ -41,6 +53,9 @@ class ReLU(ActivationFunction):
     def __call__(self, x):
         return np.maximum(0, x)
 
+    def derivative(self, x):
+        return np.where(x > 0, 1, 0)
+
     def __str__(self):
         return "ReLU"
 
@@ -48,6 +63,9 @@ class ReLU(ActivationFunction):
 class LeakyReLU(ActivationFunction):
     def __call__(self, x):
         return np.maximum(0.01 * x, x)
+
+    def derivative(self, x):
+        return np.where(x > 0, 1, 0.01)
 
     def __str__(self):
         return "LeakyReLU"
