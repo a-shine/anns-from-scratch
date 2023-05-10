@@ -37,16 +37,16 @@ if __name__ == "__main__":
         2, Perceptron(n=2, activation_function=Step(), w=[1.0, 1.0], b=-1)
     )
     hidden_layer = Layer(
-        2, Perceptron(n=2, activation_function=Step(), w=[1.0, 1.0], b=-2)
+        2, Perceptron(n=2, activation_function=Step(), w=[0.1, 1.0], b=-1)
     )
     output_layer = Layer(
-        2, Perceptron(n=2, activation_function=Step(), w=[1.0, 1.0], b=-2)
+        2, Perceptron(n=2, activation_function=Step(), w=[1.0, 1.0], b=-1)
     )
 
     input_layer.append(hidden_layer)
     hidden_layer.append(output_layer)
 
-    print(input_layer._feed_forward([0, 1, 0, 0]))
+    print(input_layer._feed_forward([0.1, 0.5]))
 
     # The next layer approach allows for feed forward but not back propagation
     # Change implementation to allow for back propagation
