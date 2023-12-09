@@ -1,5 +1,6 @@
 from loss_functions import LossFunction, L1
 from neurones import Perceptron
+import numpy as np
 
 
 class Layer:
@@ -7,9 +8,9 @@ class Layer:
         self.neurone_instance = neuron_instance
         self.neurones = []
 
-        self.nb_outputs = nb_neurons
-        self.nb_inputs = neuron_instance.n * nb_neurons
-        self.nb_weights = self.nb_inputs + 1  # +1 for the bias
+        # Make an np.array of size nuurone_instance.n * nb_neurons
+        self.inputs = np.zeros(neuron_instance.n * nb_neurons)
+        self.weights = np.zeros((neuron_instance.n + 1) * nb_neurons)
 
         self.prev_layer: Layer = None
         self.next_layer: Layer = None
